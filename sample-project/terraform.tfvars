@@ -1,12 +1,12 @@
-region        = "us-east-1"
-region_name   = "virginia"
-project_name  = "EKS-By-Terraform"
-key_name      = "my_key"
-ami           = "ami-0e001c9271cf7f3b9"
-instance_type = "t3.medium"
-cluster_name  = "EKS-By-Terraform"
-aws_profile   = "ankush-katkurwar30"
-aws_account_id = 600748199510
+region          = "us-east-1"
+region_name     = "virginia"
+project_name    = "EKS-By-Terraform"
+instance_types  = "t3.medium"
+cluster_name    = "EKS-By-Terraform"
+aws_profile     = "ankush-katkurwar30"
+aws_account_id  = 600748199510
+cidr_block      = "10.0.0.0/16"
+node_group_name = "Primary-Node-Group"
 
 
 ingress_rules = {
@@ -17,26 +17,34 @@ ingress_rules = {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTP traffic from anywhere"
   }
-  ssh_my_ip = {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["103.215.158.90/32"]
-    description = "Allow SSH traffic from my IP"
-  }
-  ftp_my_ip = {
-    from_port   = 21
-    to_port     = 21
-    protocol    = "tcp"
-    cidr_blocks = ["103.215.158.90/32"]
-    description = "Allow FTP traffic from my IP"
-  }
   https = {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-    description = "Allow HTTPS traffic from 10.0.0.0/16"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTPS traffic from 0.0.0.0/0"
+  }
+  ssh_my_ip = {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow SSH traffic from my IP"
+  }
+  ftp_my_ip = {
+    from_port   = 1025
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow FTP traffic from my IP"
   }
 }
-
+egress_rules = {
+  http = {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow All Outbound traffic from anywhere"
+  }
+}

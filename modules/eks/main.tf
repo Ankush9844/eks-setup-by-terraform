@@ -1,5 +1,5 @@
 ################################################################
-# EKS Cluster
+# Create EKS Cluster                                           #
 ################################################################
 
 resource "aws_eks_cluster" "eksCluster" {
@@ -8,12 +8,12 @@ resource "aws_eks_cluster" "eksCluster" {
 
   vpc_config {
     subnet_ids         = var.private_subnet_ids
-    security_group_ids = [var.sg_id]
+    security_group_ids = [var.securityGroupID]
   }
 }
 
 ################################################################
-# EKS node group
+# EKS node group                                               #
 ################################################################
 
 resource "aws_eks_node_group" "eksNodeGroup" {
@@ -40,7 +40,25 @@ resource "aws_eks_node_group" "eksNodeGroup" {
 }
 
 ###############################################################
-#
+# Add Addons in EKS cluster                                   #
+###############################################################
+
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name                = aws_eks_cluster.eksCluster.name
+  addon_name                  = "aws-ebs-csi-driver"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = "v1.46.0-eksbuild.1"
+}
+
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name                = aws_eks_cluster.eksCluster.name
+  addon_name                  = "vpc-cni"
+  resolve_conflicts_on_create = "OVERWRITE"
+  addon_version               = "v1.20.0-eksbuild.1"
+}
+
+###############################################################
+# Get TLS sertificate & Create OIDC Provider                  #
 ###############################################################
 
 data "tls_certificate" "eks" {
@@ -53,27 +71,9 @@ resource "aws_iam_openid_connect_provider" "eks_oidc" {
   thumbprint_list = [data.tls_certificate.eks.certificates.0.sha1_fingerprint]
 }
 
-############################################################################
-#
-############################################################################
-
-resource "aws_eks_addon" "ebs_csi" {
-  cluster_name  = aws_eks_cluster.eksCluster.name
-  addon_name    = "aws-ebs-csi-driver"
-  addon_version = "v1.46.0-eksbuild.1"
-}
-
-resource "aws_eks_addon" "vpc_cni" {
-  cluster_name                = aws_eks_cluster.eksCluster.name
-  addon_name                  = "vpc-cni"
-  resolve_conflicts_on_create = "OVERWRITE"
-  addon_version               = "v1.20.0-eksbuild.1"
-}
-
-
-###################################################################################
-#
-###################################################################################
+###############################################################
+# Create  Assume Role Policies for Addons                     #
+###############################################################
 
 data "aws_iam_policy_document" "addons_assume_role_policy" {
   statement {
@@ -108,6 +108,3 @@ resource "aws_iam_role_policy_attachment" "ebs_driver_role_policy_attachement" {
   role       = aws_iam_role.addons_role.name
 }
 
-
-#
-####################################################

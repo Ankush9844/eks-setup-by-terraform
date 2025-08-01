@@ -1,6 +1,7 @@
-#####################################################################
-# EKS cluster role and policy attachment
-#####################################################################
+#########################################################
+# EKS cluster role and policy attachment                #
+#########################################################
+
 resource "aws_iam_role" "ClusterRole" {
   name = "${var.project_name}-Cluster-Role"
   assume_role_policy = jsonencode({
@@ -28,9 +29,10 @@ resource "aws_iam_policy_attachment" "EKSServicePolicyAttachment" {
 }
 
 
-########################################################################
-# EKS node group role
-########################################################################
+#########################################################
+# EKS Node Group role and policy attachment             #
+#########################################################
+
 resource "aws_iam_role" "NodeGroupRole" {
   name = "${var.project_name}-NodeGroup-Role"
   assume_role_policy = jsonencode({
@@ -69,9 +71,10 @@ resource "aws_iam_role_policy_attachment" "AWSCSIProvisionerRolePolicy-Node" {
   role       = aws_iam_role.NodeGroupRole.name
 }
 
-######################################################################
-# Karpenter Policy Attachments
-######################################################################
+#########################################################
+# Karpenter role and policy attachment                  #
+#########################################################
+
 resource "aws_iam_role_policy_attachment" "KarpenterSSMPolicy" {
   role       = aws_iam_role.NodeGroupRole.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -84,7 +87,7 @@ resource "aws_iam_instance_profile" "KarpenterInstanceProfile" {
 
 
 #################################################################
-#
+#                                                               #
 #################################################################
 
 

@@ -23,6 +23,12 @@ terraform {
   }
 }
 
+
+provider "aws" {
+  region  = var.region
+  profile = var.aws_profile
+}
+
 provider "helm" {
   kubernetes {
     host                   = module.eks_cluster.eks_cluster_endpoint
@@ -36,8 +42,4 @@ provider "helm" {
   }
 }
 
-provider "aws" {
-  region  = var.region
-  profile = var.aws_profile
-}
 

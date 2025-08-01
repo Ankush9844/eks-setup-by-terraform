@@ -1,3 +1,6 @@
+#########################################################
+# Karpenter AssumeRole Policy Attachements              #
+#########################################################
 
 data "aws_iam_policy_document" "KarpenterControllerAssumeRolePolicy" {
   statement {
@@ -32,8 +35,9 @@ output "karpenter_controller_role_arn" {
 }
 
 
-####################################################
-
+#########################################################
+# Karpenter Controller Policy and Attachement           #
+#########################################################
 
 resource "aws_iam_policy" "karpenter_controller_policy" {
   name = "KarpenterControllerPolicy-${var.project_name}"
@@ -157,7 +161,10 @@ resource "aws_iam_role_policy_attachment" "karpenter_controller_policy_attach" {
   policy_arn = aws_iam_policy.karpenter_controller_policy.arn
 }
 
-################################################
+
+#########################################################
+# Karpenter Instance Profile  and Attachement           #
+#########################################################
 
 resource "aws_iam_instance_profile" "karpenterInstanceProfile" {
   name = "KarpenterNodeInstanceProfile"

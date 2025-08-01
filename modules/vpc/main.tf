@@ -1,14 +1,21 @@
-resource "aws_vpc" "my-vpc" {
+################################################################
+# Create VPC                                                   #
+################################################################
+
+resource "aws_vpc" "main" {
   cidr_block       = var.cidr_block
   instance_tenancy = "default"
-
   tags = {
     Name = "${var.project_name}-vpc"
   }
 }
 
-resource "aws_internet_gateway" "internet_gateway" {
-  vpc_id = aws_vpc.my-vpc.id
+################################################################
+# Create IGW in VPC                                            #
+################################################################
+
+resource "aws_internet_gateway" "internetGateway" {
+  vpc_id = aws_vpc.main.id
 
   tags = {
     Name = "${var.project_name}-igw"
@@ -16,145 +23,142 @@ resource "aws_internet_gateway" "internet_gateway" {
 
 }
 
+################################################################
+# Get Available Zones                                          #
+################################################################
 
-# create public subnet az1
+data "aws_availability_zones" "zones" {
+  state = "available"
+}
+output "zones" {
+  value = data.aws_availability_zones.zones.names
+}
 
-resource "aws_subnet" "public-subnet-1" {
-  vpc_id                  = aws_vpc.my-vpc.id
-  availability_zone       = var.availability_zone[0]
-  cidr_block              = var.az_public_cidr[0]
-  map_public_ip_on_launch = var.public_ip
+
+################################################################
+# Create Public Subnets in VPC                                 #
+################################################################
+
+resource "aws_subnet" "public" {
+  count                   = 2
+  vpc_id                  = aws_vpc.main.id
+  availability_zone       = data.aws_availability_zones.zones.names[count.index]
+  cidr_block              = cidrsubnet("10.0.0.0/16", 8, count.index)
+  map_public_ip_on_launch = true
 
   tags = {
-    "Name"                      = "public-us-east-1a"
+    "Name"                      = "Public-Subnet-${count.index + 1}"
     "kubernetes.io/role/elb"    = "1"
     "kubernetes.io/cluster/eks" = "owned"
     "karpenter.sh/discovery"    = var.cluster_name
   }
 }
 
-# create public subnet az2
+################################################################
+# Create Public Route Table                                    #
+################################################################
 
-resource "aws_subnet" "public-subnet-2" {
-  vpc_id                  = aws_vpc.my-vpc.id
-  availability_zone       = var.availability_zone[1]
-  cidr_block              = var.az_public_cidr[1]
-  map_public_ip_on_launch = var.public_ip
-
-  tags = {
-    "Name"                      = "public-us-east-1b"
-    "kubernetes.io/role/elb"    = "1"
-    "kubernetes.io/cluster/eks" = "owned"
-    "karpenter.sh/discovery"    = var.cluster_name
-  }
-}
-
-
-# create route table and public route i.e. add internet gateway in public route table with internet access 0.0.0.0/0
-# we create public route for internet access
-
-resource "aws_route_table" "public-rt" {
-  vpc_id = aws_vpc.my-vpc.id
+resource "aws_route_table" "publicRouteTable" {
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id
+    gateway_id = aws_internet_gateway.internetGateway.id
   }
 }
 
-# associate public subnet 1 to public route table
+################################################################
+# Associate Public Subnet Route                                #
+################################################################
 
-resource "aws_route_table_association" "public_subnet_1_route" {
-  subnet_id      = aws_subnet.public-subnet-1.id
-  route_table_id = aws_route_table.public-rt.id
-}
-
-# associate public subnet 2 to public route table
-
-resource "aws_route_table_association" "public_subnet_2_route" {
-  subnet_id      = aws_subnet.public-subnet-2.id
-  route_table_id = aws_route_table.public-rt.id
+resource "aws_route_table_association" "publicSubnetRoute" {
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.publicRouteTable.id
 }
 
 
-# create private subnet 1
+################################################################
+# Create Private Subnets in VPC                                #
+################################################################
 
-resource "aws_subnet" "private-subnet-1" {
-  vpc_id                  = aws_vpc.my-vpc.id
-  availability_zone       = var.availability_zone[0]
-  cidr_block              = var.az_private_cidr[0]
-  map_public_ip_on_launch = false
+resource "aws_subnet" "private" {
+  count             = 2
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = cidrsubnet("10.0.0.0/16", 8, count.index + 2) # start from 10.0.2.0/24
+  availability_zone = data.aws_availability_zones.zones.names[count.index]
 
   tags = {
-    "Name"                            = "private-us-east-1a"
+    Name                              = "Private-Subnet-${count.index + 1}"
+    Type                              = "private"
     "kubernetes.io/role/internal-elb" = "1"
     "kubernetes.io/cluster/eks"       = "owned"
     "karpenter.sh/discovery"          = var.cluster_name
   }
 }
 
-# create private subnet 2
 
-resource "aws_subnet" "private-subnet-2" {
-  vpc_id                  = aws_vpc.my-vpc.id
-  availability_zone       = var.availability_zone[1]
-  cidr_block              = var.az_private_cidr[1]
-  map_public_ip_on_launch = false
+################################################################
+# Create Private Route Table                                   #
+################################################################
 
+resource "aws_route_table" "privateRouteTable" {
+  vpc_id = aws_vpc.main.id
   tags = {
-    "Name"                            = "private-us-east-1b"
-    "kubernetes.io/role/internal-elb" = "1"
-    "kubernetes.io/cluster/eks"       = "owned"
-    "karpenter.sh/discovery"          = var.cluster_name
+    Name = "Private-Route-Table"
   }
 }
 
-# create private route table
-resource "aws_route_table" "private-rt" {
-  vpc_id = aws_vpc.my-vpc.id
+################################################################
+# Associate Private Subnet Route                               #
+################################################################
+
+resource "aws_route_table_association" "privateSubnetRoute" {
+  count          = length(aws_subnet.private)
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.privateRouteTable.id
+}
+
+
+
+###############################################################
+#Create Elastic IP for Natgateway                             #
+###############################################################
+
+resource "aws_eip" "elasticIP" {}
+
+###############################################################
+#Create  Natgateway                                           #
+###############################################################
+
+resource "aws_nat_gateway" "natGateway" {
+  allocation_id = aws_eip.elasticIP.id
+  subnet_id     = aws_subnet.public[0].id
   tags = {
-    Name = "private-route-table"
+    Name = "NAT-Gateway"
   }
 }
 
-# associate private subnet route to private route table
-resource "aws_route_table_association" "private_subnet_route_1" {
-  subnet_id      = aws_subnet.private-subnet-1.id
-  route_table_id = aws_route_table.private-rt.id
-}
+###############################################################
+# Create  Natgateway Route in Private Route Table              #
+###############################################################
 
-resource "aws_route_table_association" "private_subnet_route_2" {
-  subnet_id      = aws_subnet.private-subnet-2.id
-  route_table_id = aws_route_table.private-rt.id
-}
-
-# create nat-gateway
-resource "aws_eip" "elastic_ip" {}
-
-resource "aws_nat_gateway" "nat_gateway" {
-  allocation_id = aws_eip.elastic_ip.id
-  subnet_id     = aws_subnet.public-subnet-1.id
-  tags = {
-    Name = "nat_gateway"
-  }
-}
-
-## ensure route
-resource "aws_route" "nat_gateway_route" {
-  route_table_id         = aws_route_table.private-rt.id
-  nat_gateway_id         = aws_nat_gateway.nat_gateway.id
+resource "aws_route" "natGatewayRoute" {
+  route_table_id         = aws_route_table.privateRouteTable.id
+  nat_gateway_id         = aws_nat_gateway.natGateway.id
   destination_cidr_block = "0.0.0.0/0"
 }
 
 
+###############################################################
+# Create  Security Group for EKS Cluster                      #
+###############################################################
 
-
-# security group
-resource "aws_security_group" "s_g" {
-  vpc_id = aws_vpc.my-vpc.id
+resource "aws_security_group" "securityGroup" {
+  vpc_id = aws_vpc.main.id
 
   tags = {
-    Name                     = "my-security-group"
+    Name                     = "security-group"
     "karpenter.sh/discovery" = var.cluster_name
   }
   dynamic "ingress" {
@@ -167,18 +171,15 @@ resource "aws_security_group" "s_g" {
       description = ingress.value.description
     }
   }
+  dynamic "egress" {
+    for_each = var.egress_rules
+    content {
+      from_port   = egress.value.from_port
+      to_port     = egress.value.to_port
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+    }
+  }
 }
 
 
-resource "aws_vpc_security_group_egress_rule" "egress_rule_ipv4" {
-  security_group_id = aws_security_group.s_g.id
-  ip_protocol       = -1
-  cidr_ipv4         = "0.0.0.0/0"
-
-}
-resource "aws_vpc_security_group_egress_rule" "egress_rule_ipv6" {
-  security_group_id = aws_security_group.s_g.id
-  ip_protocol       = -1
-  cidr_ipv6         = "::/0"
-
-}

@@ -16,9 +16,3 @@ output "eks_cluster_id" {
 output "eks_cluster_endpoint" {
   value = module.eks_cluster.eks_cluster_endpoint
 }
-
-
-
-output "aws_profile" {
-  value = var.aws_profile
-}
