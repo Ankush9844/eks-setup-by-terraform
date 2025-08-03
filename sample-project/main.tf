@@ -1,5 +1,5 @@
 module "vpc" {
-  source        = "../modules/vpc"
+  source        = "../modules/1.VPC"
   cluster_name  = var.cluster_name
   region        = var.region
   project_name  = var.project_name
@@ -9,12 +9,12 @@ module "vpc" {
 }
 
 # module "ssh_key" {
-#   source   = "../modules/ssh_key"
+#   source   = "../modules/2.SSH-KEY"
 #   key_name = var.key_name
 # }
 
 # module "ec2_instance" {
-#   source        = "../modules/ec2"
+#   source        = "../modules/3.EC2"
 #   instance_type = var.instance_type
 #   ami           = var.ami
 #   key_name      = var.key_name
@@ -23,12 +23,12 @@ module "vpc" {
 # }
 
 module "iam" {
-  source       = "../modules/iam"
+  source       = "../modules/4.IAM"
   project_name = var.project_name
 }
 
 module "eks_cluster" {
-  source                 = "../modules/eks"
+  source                 = "../modules/5.EKS"
   region                 = var.region
   project_name           = var.project_name
   instance_types         = var.instance_types
@@ -45,7 +45,7 @@ module "eks_cluster" {
 
 
 module "karpenter" {
-  source                              = "../modules/karpenter"
+  source                              = "../modules/6.KARPENTER"
   project_name                        = var.project_name
   aws_profile                         = var.aws_profile
   aws_account_id                      = var.aws_account_id
