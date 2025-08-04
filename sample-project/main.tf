@@ -33,7 +33,6 @@ module "eks_cluster" {
   project_name           = var.project_name
   instance_types         = var.instance_types
   aws_profile            = var.aws_profile
-  aws_account_id         = var.aws_account_id
   eks_cluster_role_arn   = module.iam.eks_cluster_role_arn
   eks_nodegroup_role_arn = module.iam.eks_nodegroup_role_arn
   private_subnet_ids     = module.vpc.privateSubnetIDs
@@ -48,7 +47,6 @@ module "karpenter" {
   source                              = "../modules/6.KARPENTER"
   project_name                        = var.project_name
   aws_profile                         = var.aws_profile
-  aws_account_id                      = var.aws_account_id
   region                              = var.region
   eks_cluster_name                    = module.eks_cluster.eks_cluster_name
   eks_cluster_endpoint                = module.eks_cluster.eks_cluster_endpoint

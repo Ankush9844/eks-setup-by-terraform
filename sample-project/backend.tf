@@ -1,10 +1,10 @@
-# terraform {
+terraform {
 
-#   backend "s3" {
-#     bucket  = "ankush-bucket-for-terraform"
-#     key     = "sample-project.tfstate"
-#     region  = "us-east-1"
-#     profile = "my_personal_aws"
-#   }
-# }
+  backend "s3" {
+    bucket  = "eks-setup-by-terraform-23858"
+    key     = "terraform.tfstate"
+    region  = "us-east-1"
+    profile = "ankush-katkurwar30"
+  }
+}
 

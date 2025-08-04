@@ -4,7 +4,6 @@ project_name    = "EKS-By-Terraform"
 instance_types  = "t3.medium"
 cluster_name    = "EKS-By-Terraform"
 aws_profile     = "ankush-katkurwar30"
-aws_account_id  = 600748199510
 cidr_block      = "10.0.0.0/16"
 node_group_name = "Primary-Node-Group"
 
