@@ -2,7 +2,6 @@ module "iam" {
   source                              = "./iam"
   project_name                        = var.project_name
   region                              = var.region
-  aws_account_id                      = var.aws_account_id
   aws_iam_openid_connect_provider_arn = var.aws_iam_openid_connect_provider_arn
   aws_iam_openid_connect_provider_url = var.aws_iam_openid_connect_provider_url
   eks_nodegroup_role_name             = var.eks_nodegroup_role_name

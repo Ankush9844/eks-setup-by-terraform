@@ -1,4 +1,10 @@
 #########################################################
+# Fecth AWS Account ID                                  #
+#########################################################
+
+data "aws_caller_identity" "main" {}
+
+#########################################################
 # Karpenter AssumeRole Policy Attachements              #
 #########################################################
 
@@ -81,13 +87,13 @@ resource "aws_iam_policy" "karpenter_controller_policy" {
         Sid      = "PassNodeIAMRole"
         Effect   = "Allow"
         Action   = "iam:PassRole"
-        Resource = "arn:aws:iam::600748199510:role/${var.project_name}-NodeGroup-Role"
+        Resource = "arn:aws:iam::${data.aws_caller_identity.main.account_id}:role/${var.project_name}-NodeGroup-Role"
       },
       {
         Sid      = "EKSClusterEndpointLookup"
         Effect   = "Allow"
         Action   = "eks:DescribeCluster"
-        Resource = "arn:aws:eks:${var.region}:${var.aws_account_id}:cluster/${var.project_name}"
+        Resource = "arn:aws:eks:${var.region}:${data.aws_caller_identity.main.account_id}:cluster/${var.project_name}"
       },
       {
         Sid    = "AllowScopedInstanceProfileCreationActions"

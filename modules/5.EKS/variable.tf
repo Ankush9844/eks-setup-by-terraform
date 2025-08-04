@@ -6,7 +6,6 @@ variable "securityGroupID" {}
 variable "node_group_name" {}
 variable "instance_types" {}
 variable "region" {}
-variable "aws_account_id" {}
 variable "aws_profile" {}
 
 
