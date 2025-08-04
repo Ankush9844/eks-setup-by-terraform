@@ -43,7 +43,7 @@ resource "aws_subnet" "public" {
   count                   = 2
   vpc_id                  = aws_vpc.main.id
   availability_zone       = data.aws_availability_zones.zones.names[count.index]
-  cidr_block              = cidrsubnet("10.0.0.0/16", 8, count.index)
+  cidr_block              = cidrsubnet("${var.cidr_block}", 8, count.index)
   map_public_ip_on_launch = true
 
   tags = {
@@ -85,7 +85,7 @@ resource "aws_route_table_association" "publicSubnetRoute" {
 resource "aws_subnet" "private" {
   count             = 2
   vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet("10.0.0.0/16", 8, count.index + 2) # start from 10.0.2.0/24
+  cidr_block        = cidrsubnet("${var.cidr_block}", 8, count.index + 2) # start from 10.0.2.0/24
   availability_zone = data.aws_availability_zones.zones.names[count.index]
 
   tags = {

@@ -43,5 +43,5 @@ spec:
         karpenter.sh/discovery: EKS-By-Terraform
   securityGroupSelectorTerms:
     - tags:
-        karpenter.sh/discovery: EKS-By-Terraform
+        kubernetes.io/cluster/EKS-By-Terraform: owned
   

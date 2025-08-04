@@ -31,12 +31,12 @@ ingress_rules = {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow SSH traffic from my IP"
   }
-  ftp_my_ip = {
+  allow_all_for_nodes = {
     from_port   = 1025
     to_port     = 65535
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow FTP traffic from my IP"
+    description = "Allow all traffic"
   }
 }
 egress_rules = {
