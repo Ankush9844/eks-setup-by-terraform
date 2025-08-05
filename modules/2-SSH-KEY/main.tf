@@ -9,7 +9,3 @@ resource "aws_key_pair" "ssh_key" {
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
-
-# resource "tls_private_key" "ssh_2_key" {
-
-# }

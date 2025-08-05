@@ -42,6 +42,7 @@ module "eks_cluster" {
 module "oidc_provider" {
   source       = "../modules/6-OIDC"
   cluster_name = module.eks_cluster.eks_cluster_name
+  depends_on   = [module.eks_cluster]
 }
 
 module "eks_addon" {
@@ -49,6 +50,7 @@ module "eks_addon" {
   cluster_name                        = module.eks_cluster.eks_cluster_name
   aws_iam_openid_connect_provider_arn = module.oidc_provider.aws_iam_openid_connect_provider_arn
   aws_iam_openid_connect_provider_url = module.oidc_provider.aws_iam_openid_connect_provider_url
+  depends_on                          = [module.eks_cluster]
 }
 
 module "karpenter" {
@@ -65,7 +67,7 @@ module "karpenter" {
   depends_on                          = [module.eks_cluster]
 }
 
-module "lbc" {
+module "load_balancer_controller" {
   source                              = "../modules/9-LB"
   cluster_name                        = module.eks_cluster.eks_cluster_name
   aws_region                          = var.region
