@@ -3,7 +3,7 @@
 ###############################################################
 
 resource "aws_eks_addon" "ebs_csi" {
-  cluster_name                = var.eks_cluster_name
+  cluster_name                = var.cluster_name
   addon_name                  = "aws-ebs-csi-driver"
   resolve_conflicts_on_create = "OVERWRITE"
   addon_version               = "v1.46.0-eksbuild.1"
@@ -11,7 +11,7 @@ resource "aws_eks_addon" "ebs_csi" {
 }
 
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name                = var.eks_cluster_name
+  cluster_name                = var.cluster_name
   addon_name                  = "vpc-cni"
   resolve_conflicts_on_create = "OVERWRITE"
   addon_version               = "v1.20.0-eksbuild.1"

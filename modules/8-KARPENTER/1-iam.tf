@@ -8,7 +8,7 @@ data "aws_caller_identity" "main" {}
 # Karpenter AssumeRole Policy Attachements              #
 #########################################################
 
-data "aws_iam_policy_document" "KarpenterControllerAssumeRolePolicy" {
+data "aws_iam_policy_document" "karpenterControllerAssumeRolePolicy" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     effect  = "Allow"
@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "KarpenterControllerAssumeRolePolicy" {
 }
 
 resource "aws_iam_role" "karpenterController" {
-  assume_role_policy = data.aws_iam_policy_document.KarpenterControllerAssumeRolePolicy.json
+  assume_role_policy = data.aws_iam_policy_document.karpenterControllerAssumeRolePolicy.json
   name               = "${var.project_name}-AmazonEKSKarpenterControllerRoleCustom"
   tags = {
     "Name" = "${var.project_name}-AmazonEKSKarpenterControllerRoleCustom"
@@ -37,7 +37,7 @@ resource "aws_iam_role" "karpenterController" {
 }
 
 output "karpenter_controller_role_arn" {
-  value = aws_iam_role.karpenter_controller.arn
+  value = aws_iam_role.karpenterController.arn
 }
 
 
@@ -45,7 +45,7 @@ output "karpenter_controller_role_arn" {
 # Karpenter Controller Policy and Attachement           #
 #########################################################
 
-resource "aws_iam_policy" "karpenter_controller_policy" {
+resource "aws_iam_policy" "karpenterControllerPolicy" {
   name = "KarpenterControllerPolicy-${var.project_name}"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -163,8 +163,8 @@ resource "aws_iam_policy" "karpenter_controller_policy" {
 
 
 resource "aws_iam_role_policy_attachment" "karpenter_controller_policy_attach" {
-  role       = aws_iam_role.karpenter_controller.name
-  policy_arn = aws_iam_policy.karpenter_controller_policy.arn
+  role       = aws_iam_role.karpenterController.name
+  policy_arn = aws_iam_policy.karpenterControllerPolicy.arn
 }
 
 
@@ -177,6 +177,6 @@ resource "aws_iam_instance_profile" "karpenterInstanceProfile" {
   role = var.eks_nodegroup_role_name
 }
 
-output "karpenter_instance_profile_name" {
-  value = aws_iam_instance_profile.karpenterInstanceProfile.name
-}
+#########################################################
+#                                                       #
+#########################################################

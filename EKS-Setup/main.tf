@@ -39,6 +39,17 @@ module "eks_cluster" {
   node_group_name        = var.node_group_name
 }
 
+module "oidc_provider" {
+  source       = "../modules/6-OIDC"
+  cluster_name = module.eks_cluster.eks_cluster_name
+}
+
+module "eks_addon" {
+  source                              = "../modules/7-ADDONS"
+  cluster_name                        = module.eks_cluster.eks_cluster_name
+  aws_iam_openid_connect_provider_arn = module.oidc_provider.aws_iam_openid_connect_provider_arn
+  aws_iam_openid_connect_provider_url = module.oidc_provider.aws_iam_openid_connect_provider_url
+}
 
 module "karpenter" {
   source                              = "../modules/8-KARPENTER"
@@ -51,9 +62,8 @@ module "karpenter" {
   aws_iam_openid_connect_provider_url = module.eks_cluster.aws_iam_openid_connect_provider_url
   cluster_ca_certificate              = module.eks_cluster.cluster_ca_certificate
   eks_nodegroup_role_name             = module.iam.eks_nodegroup_role_name
-  depends_on = [module.eks_cluster]
+  depends_on                          = [module.eks_cluster]
 }
-
 
 module "lbc" {
   source                              = "../modules/9-LB"
