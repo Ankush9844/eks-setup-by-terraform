@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "KarpenterControllerAssumeRolePolicy" {
   }
 }
 
-resource "aws_iam_role" "karpenter_controller" {
+resource "aws_iam_role" "karpenterController" {
   assume_role_policy = data.aws_iam_policy_document.KarpenterControllerAssumeRolePolicy.json
   name               = "${var.project_name}-AmazonEKSKarpenterControllerRoleCustom"
   tags = {

@@ -1,13 +1,3 @@
-module "iam" {
-  source                              = "./iam"
-  project_name                        = var.project_name
-  region                              = var.region
-  aws_iam_openid_connect_provider_arn = var.aws_iam_openid_connect_provider_arn
-  aws_iam_openid_connect_provider_url = var.aws_iam_openid_connect_provider_url
-  eks_nodegroup_role_name             = var.eks_nodegroup_role_name
-}
-
-
 #########################################################
 # Karpenter Install Using Helm in EKS Cluster           #
 #########################################################
@@ -25,7 +15,7 @@ resource "helm_release" "karpenter" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.iam.karpenter_controller_role_arn
+    value = aws_iam_role.karpenterController.arn
   }
 
   set {
@@ -40,7 +30,7 @@ resource "helm_release" "karpenter" {
 
   set {
     name  = "settings.aws.defaultInstanceProfile"
-    value = module.iam.karpenter_instance_profile_name
+    value = aws_iam_instance_profile.karpenterInstanceProfile.name
   }
 
 }

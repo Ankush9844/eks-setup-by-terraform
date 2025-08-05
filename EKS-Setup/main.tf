@@ -1,6 +1,5 @@
 module "vpc" {
-  source        = "../modules/1.VPC"
-  cluster_name  = var.cluster_name
+  source        = "../modules/1-VPC"
   region        = var.region
   project_name  = var.project_name
   cidr_block    = var.cidr_block
@@ -23,12 +22,12 @@ module "vpc" {
 # }
 
 module "iam" {
-  source       = "../modules/4.IAM"
+  source       = "../modules/4-IAM"
   project_name = var.project_name
 }
 
 module "eks_cluster" {
-  source                 = "../modules/5.EKS"
+  source                 = "../modules/5-EKS"
   region                 = var.region
   project_name           = var.project_name
   instance_types         = var.instance_types
@@ -42,7 +41,7 @@ module "eks_cluster" {
 
 
 module "karpenter" {
-  source                              = "../modules/6.KARPENTER"
+  source                              = "../modules/8-KARPENTER"
   project_name                        = var.project_name
   aws_profile                         = var.aws_profile
   region                              = var.region
@@ -52,14 +51,13 @@ module "karpenter" {
   aws_iam_openid_connect_provider_url = module.eks_cluster.aws_iam_openid_connect_provider_url
   cluster_ca_certificate              = module.eks_cluster.cluster_ca_certificate
   eks_nodegroup_role_name             = module.iam.eks_nodegroup_role_name
-
   depends_on = [module.eks_cluster]
 }
 
 
 module "lbc" {
-  source                              = "../modules/7.LB"
-  cluster_name                        = var.cluster_name
+  source                              = "../modules/9-LB"
+  cluster_name                        = module.eks_cluster.eks_cluster_name
   aws_region                          = var.region
   aws_iam_openid_connect_provider_arn = module.eks_cluster.aws_iam_openid_connect_provider_arn
   aws_iam_openid_connect_provider_url = module.eks_cluster.aws_iam_openid_connect_provider_url

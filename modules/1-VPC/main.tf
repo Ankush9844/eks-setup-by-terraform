@@ -47,11 +47,11 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    "Name"                      = "Public-Subnet-${count.index + 1}"
-    "kubernetes.io/role/elb"    = "1"
-    "kubernetes.io/cluster/eks" = "owned"
-    "karpenter.sh/discovery"    = var.cluster_name
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "Name"                                      = "Public-Subnet-${count.index + 1}"
+    "kubernetes.io/role/elb"                    = "1"
+    "kubernetes.io/cluster/eks"                 = "owned"
+    "karpenter.sh/discovery"                    = var.project_name
+    "kubernetes.io/cluster/${var.project_name}" = "shared"
   }
 }
 
@@ -90,12 +90,12 @@ resource "aws_subnet" "private" {
   availability_zone = data.aws_availability_zones.zones.names[count.index]
 
   tags = {
-    Name                              = "Private-Subnet-${count.index + 1}"
-    Type                              = "private"
-    "kubernetes.io/role/internal-elb" = "1"
-    "kubernetes.io/cluster/eks"       = "owned"
-    "karpenter.sh/discovery"          = var.cluster_name
-    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    Name                                        = "Private-Subnet-${count.index + 1}"
+    Type                                        = "private"
+    "kubernetes.io/role/internal-elb"           = "1"
+    "kubernetes.io/cluster/eks"                 = "owned"
+    "karpenter.sh/discovery"                    = var.project_name
+    "kubernetes.io/cluster/${var.project_name}" = "shared"
   }
 }
 
@@ -161,7 +161,7 @@ resource "aws_security_group" "securityGroup" {
 
   tags = {
     Name                     = "security-group"
-    "karpenter.sh/discovery" = var.cluster_name
+    "karpenter.sh/discovery" = var.project_name
   }
   dynamic "ingress" {
     for_each = var.ingress_rules
