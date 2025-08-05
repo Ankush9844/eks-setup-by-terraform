@@ -7,5 +7,8 @@ variable "node_group_name" {}
 variable "aws_profile" {}
 variable "ingress_rules" {}
 variable "egress_rules" {}
+variable "key_name" {}
+variable "instance_type" {}
+variable "ami" {}
 
 

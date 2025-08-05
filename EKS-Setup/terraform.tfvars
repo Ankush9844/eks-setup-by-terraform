@@ -1,6 +1,9 @@
 region          = "us-east-1"
+ami             = "ami-021589336d307b577"
+key_name        = "eks-bastion-node"
 region_name     = "virginia"
 project_name    = "EKS-By-Terraform"
+instance_type   = "t2.micro"
 instance_types  = "t3.medium"
 aws_profile     = "ankush-katkurwar30"
 cidr_block      = "10.0.0.0/16"
@@ -26,15 +29,8 @@ ingress_rules = {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP
     description = "Allow SSH traffic from my IP"
-  }
-  allow_all_for_nodes = {
-    from_port   = 1025
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all traffic"
   }
 }
 egress_rules = {

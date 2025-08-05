@@ -1,20 +1,9 @@
-variable "instance_type" {}
-
-variable "associate_public_ip_address" {
-  default = true
-}
-
 variable "ami" {}
-
+variable "instance_type" {}
 variable "key_name" {}
 
-variable "availability_zone" {
-  type    = list(string)
-  default = ["us-east-1a", "us-east-1b"]
-}
+variable "availability_zone" {}
 
-variable "subnet_ids" {
-  type = list(string)
-}
+variable "publicSubnetID" {}
 
-variable "sg_id" {}
+variable "securityGroupID" {}

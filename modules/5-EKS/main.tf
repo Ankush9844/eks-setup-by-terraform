@@ -8,7 +8,6 @@ resource "aws_eks_cluster" "eksCluster" {
 
   vpc_config {
     subnet_ids         = var.private_subnet_ids
-    security_group_ids = [var.securityGroupID]
   }
 }
 
