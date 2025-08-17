@@ -3,6 +3,7 @@
 In this lesson, we will build a **custom VPC using Terraform**.  
 This VPC will be the foundation for deploying our EKS cluster and other AWS resources.  
 
+![EKS Architecture](/images/vpc-architecture-.png)
 ---
 
 ## 🎯 Learning Goals
