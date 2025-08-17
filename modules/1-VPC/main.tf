@@ -141,6 +141,15 @@ resource "aws_nat_gateway" "natGateway" {
   }
 }
 
+# resource "aws_nat_gateway" "natGateway" {
+#   count = length(aws_subnet.public)
+#   allocation_id = aws_eip.elasticIP.id
+#   subnet_id     = aws_subnet.public[count.index].id
+#   tags = {
+#     Name = "NAT-Gateway"
+#   }
+# }
+
 ###############################################################
 # Create  Natgateway Route in Private Route Table              #
 ###############################################################
