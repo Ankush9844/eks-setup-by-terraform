@@ -18,11 +18,13 @@ By the end of this lesson, you’ll learn:
 ## 📂 Project Structure
 We’ll follow a modular approach:
 
+```h
 ── modules/
  └── vpc/
   ├── main.tf
   ├── variables.tf
   └── outputs.tf
+```
 
 # Explanation
 
@@ -115,8 +117,10 @@ resource "aws_subnet" "public" {
 
 Terraform will generate:
 
+```h
 -> Subnet 1 → 10.0.0.0/24
 -> Subnet 2 → 10.0.1.0/24
 -> Subnet 3 → 10.0.2.0/24
+```
 
 Automatically calculated, no manual CIDR typing needed ✅
