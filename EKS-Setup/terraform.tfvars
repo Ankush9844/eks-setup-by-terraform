@@ -1,15 +1,8 @@
-region          = "us-east-1"
-ami             = "ami-021589336d307b577"
-key_name        = "eks-bastion-node"
-region_name     = "virginia"
-project_name    = "EKS-By-Terraform"
-instance_type   = "t2.micro"
-instance_types  = "t3.medium"
-aws_profile     = "ankush-katkurwar30"
-cidr_block      = "10.0.0.0/16"
-node_group_name = "Primary-Node-Group"
-
-
+ami          = "ami-021589336d307b577"
+region       = "us-east-1"
+aws_profile  = "ankush-katkurwar30"
+cidr_block   = "10.0.0.0/16"
+project_name = "EKS-By-Terraform"
 ingress_rules = {
   http = {
     from_port   = 80

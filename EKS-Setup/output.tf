@@ -1,5 +1,3 @@
-# output "private_key" {
-#   value     = module.ssh_key.private_key
-#   sensitive = true
-# }
-
+output "availability_zones" {
+  value = module.vpc.zones
+}
