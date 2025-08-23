@@ -1,4 +1,4 @@
-# 🚀 EKS Setup by Terraform — Lesson 1  
+# 🚀 EKS Setup with Terraform — Lesson 1  
 
 **From Zero to Production Ready Kubernetes Cluster on AWS — Prerequisites Installation & Setup**  
 
